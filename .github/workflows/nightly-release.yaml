@@ -22,8 +22,14 @@ jobs:
       - name: install apt dependencies
         run: sudo ./.github/setup-apt.sh
 
+      - name: checkout submodules
+        run: |
+          git submodule update --init --recursive
+          git submodule foreach 'git maintenance run'
+
       - name: build toolchain
         run: |
+          cd riscv-gnu-toolchain
           TARGET_TUPLE=($(echo ${{ matrix.target }} | tr "-" "\n"))
           BUILD_TOOLCHAIN="./configure --prefix=/mnt/riscv --with-arch=${TARGET_TUPLE[0]} --with-abi=${TARGET_TUPLE[1]} --with-cmodel=medany --with-languages=c,c++ --with-isa-spec=20191213 --enable-qemu-system"
           if [ "${{ matrix.compiler }}" == "llvm" ]; then # build toolchain with llvm
