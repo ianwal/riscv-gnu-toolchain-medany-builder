@@ -7,8 +7,6 @@ on: workflow_dispatch
 
 jobs:
   build:
-    needs: activity-check
-    if: needs.activity-check.outputs.stale != 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
