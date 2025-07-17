@@ -13,15 +13,8 @@ jobs:
     strategy:
       matrix:
         os:       [ubuntu-24.04]
-        mode:     [newlib]
         target:   [rv64gc-lp64d]
         compiler: [gcc]
-        exclude:
-          - mode: musl
-            compiler: llvm
-
-          - mode: uclibc
-            compiler: llvm
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +35,7 @@ jobs:
           fi
           sudo mkdir /mnt/riscv
           sudo chown runner:runner /mnt/riscv
-          make -j $(nproc) ${{ matrix.mode }}
+          make -j $(nproc)
 
       - name: tarball build
         run: |
@@ -54,16 +47,7 @@ jobs:
         id:   toolchain-name-generator
         run: |
           if [[ "${{ matrix.target }}" == *"32"* ]]; then BITS=32; else BITS=64; fi
-          case "${{ matrix.mode }}" in
-            "linux")
-              MODE="glibc";;
-            "musl")
-              MODE="musl";;
-            "uclibc")
-              MODE="uclibc-ng";;
-            *)
-              MODE="elf";;
-          esac
+          MODE="elf";;
           echo "TOOLCHAIN_NAME=riscv$BITS-$MODE-${{ matrix.os }}-${{ matrix.compiler }}-nightly" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
