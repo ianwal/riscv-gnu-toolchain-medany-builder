@@ -51,8 +51,7 @@ jobs:
         id:   toolchain-name-generator
         run: |
           if [[ "${{ matrix.target }}" == *"32"* ]]; then BITS=32; else BITS=64; fi
-          MODE="elf";;
-          echo "TOOLCHAIN_NAME=riscv$BITS-$MODE-${{ matrix.os }}-${{ matrix.compiler }}-nightly" >> $GITHUB_OUTPUT
+          echo "TOOLCHAIN_NAME=riscv$BITS-elf-${{ matrix.os }}-${{ matrix.compiler }}-nightly" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
         with:
