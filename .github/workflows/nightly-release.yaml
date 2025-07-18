@@ -4,6 +4,19 @@ on: workflow_dispatch
   #schedule:
   #  - cron:  '0 0 * * ?'
 
+env:
+  submodule_paths: |
+    binutils
+    dejagnu
+    gcc
+    gdb
+    glibc
+    newlib
+    pk
+    qemu
+    spike
+    uclibc-ng
+    .git/modules
 
 jobs:
   build:
@@ -16,15 +29,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Remove unneeded frameworks to recover disk space
-        run: sudo ./.github/cleanup-rootfs.sh
+      #- name: Remove unneeded frameworks to recover disk space
+      #  run: sudo ./.github/cleanup-rootfs.sh
 
       - name: install apt dependencies
         run: sudo ./.github/setup-apt.sh
 
       - name: checkout submodules
         run: |
-          git submodule update --init --recursive
+          git submodule update --init -j $(nproc) --depth 1 $(echo ${submodule_paths} | sed '$d' | tr '\n' ' ')
           git submodule foreach 'git maintenance run'
 
       - name: build toolchain
